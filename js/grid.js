@@ -1,10 +1,10 @@
 const grid = [
-  [[0], [1], [2], [3], [4], [5], [6]],//A = 0
-  [[0], [1], [2], [3], [4], [5], [6]],//B = 1
-  [[0], [1], [2], [3], [4], [5], [6]],//C = 2
-  [[0], [1], [2], [3], [4], [5], [6]],//D = 3
-  [[0], [1], [2], [3], [4], [5], [6]],//E = 4
-  [[0], [1], [2], [3], [4], [5], [6]] //F = 5
+  [[], [], [], [], [], [], []],//A = 
+  [[], [], [], [], [], [], []],//B = 
+  [[], [], [], [], [], [], []],//C = 
+  [[], [], [], [], [], [], []],//D = 
+  [[], [], [], [], [], [], []],//E = 4
+  [[], [], [], [], [], [], []] //F = 5
 ]
 
 const gridY = [
@@ -27,6 +27,42 @@ const botLeftTopRight = [
 ]
 
 const topLeftBotRight = [
-  
+  [grid[2][0], grid[3][1], grid[4][2], grid[5][3]],
+  [grid[1][0], grid[2][1], grid[3][2], grid[4][3], grid[5][4]],
+  [grid[0][0], grid[1][1], grid[2][2], grid[3][3], grid[4][4], grid[5][5]],
+  [grid[0][1], grid[1][2], grid[2][3], grid[3][4], grid[4][5], grid[5][6]],
+  [grid[0][2], grid[1][3], grid[2][4], grid[3][5], grid[4][6]],
+  [grid[0][3], grid[1][4], grid[2][5], grid[3][6]]
 ]
-console.log(BotLeftTopRight);
+
+const filteredIdx = (array, row, key) => array[row].reduce((idxArr, item, idx) => {
+  item.toString() === key.toString() ? idxArr.push(idx) : false;
+  return idxArr;
+}, []);
+
+
+
+const getIdxList = (array, key) => {
+  let idxArr = [];
+  array.forEach((item, idx) => {
+    let idxRow = filteredIdx(array, idx, key);
+    idxRow.forEach(idx => idxArr.push(idx));
+  })
+  return idxArr;
+}
+
+let allIdx = getIdxList(gridY, 0);
+let winCheck = [];
+
+for (let i = 0; i < allIdx.length; i++) {
+
+  allIdx[i + 1] == allIdx[i] + 1 ? winCheck.unshift(true) : winCheck.unshift(false);
+  winCheck = winCheck.slice(0, 3)
+  winCheck[0] === true && winCheck[1] === true && winCheck[2] === true ?
+  winner() : false;
+}
+console.log(winCheck);
+// console.log(allIdx)
+function winner() {
+  console.log('win!')
+}
