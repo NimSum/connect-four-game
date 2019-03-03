@@ -17,15 +17,15 @@ section {
   display: grid;
   list-style-type: none;
   grid-gap: 2%;
-  background-color: red;
+  background-color: lightgray;
   grid-template-columns: repeat(7, minmax(20px, 10vw));
   grid-template-rows: repeat(6, minmax(20px, 10vh));
-  border: 1px solid black;
+  border: 10px solid gray;
 }
 
 .main-grid-container li {
-  border-radius: 50%;
-  border: 1px dashed black;
+  border-radius: 30%;
+  border: 1px solid black;
   background-color: #fff;
-  /* height: 12vh; */
 }
+
