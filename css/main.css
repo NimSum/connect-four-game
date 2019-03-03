@@ -1,0 +1,31 @@
+*, 
+*:before, 
+*:after {
+  box-sizing: border-box;
+}
+
+section {
+  padding: 20px;
+  display: flex;
+  justify-content: center;
+}
+
+.main-grid-container {
+  height: 70vh;
+  margin: 0;
+  padding: 15px;
+  display: grid;
+  list-style-type: none;
+  grid-gap: 2%;
+  background-color: red;
+  grid-template-columns: repeat(7, minmax(20px, 10vw));
+  grid-template-rows: repeat(6, minmax(20px, 10vh));
+  border: 1px solid black;
+}
+
+.main-grid-container li {
+  border-radius: 50%;
+  border: 1px dashed black;
+  background-color: #fff;
+  /* height: 12vh; */
+}

@@ -51,7 +51,7 @@ const getIdxList = (array, key) => {
   return idxArr;
 }
 
-let allIdx = getIdxList(gridY, 0);
+let allIdx = getIdxList(botLeftTopRight, 1);
 let winCheck = [];
 
 for (let i = 0; i < allIdx.length; i++) {
