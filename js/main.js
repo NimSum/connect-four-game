@@ -1,74 +1,108 @@
+window.addEventListener('load', gridEventListener);
 const game = new Grid();
-
-
-
-function slotPlacement(column, player) {
-  for (let i = column.length - 1; i >= 0; i--) {
-    if (column[i] == false) {
-      column[i][0] = player;
-      console.log(column);
-      return;
-    }
-  }
-}
-
+let playerSwitch = parseInt(document.querySelector('#grid-container').dataset.p1p2);
 
 function gridEventListener() {
+  rowIndicator();
   const validateClick = (e) => {
     e.target.nodeName === 'LI' 
-    ? checkPosition(e, 1)
+    ? checkPosition(e)
     : false;
   }
   document.querySelector('#grid-container').addEventListener('click', validateClick);
 }
 
-gridEventListener();
-
-function checkPosition(e, player) {
+function checkPosition(e) {
   let position = e.target.dataset.slot;
   position >= 0 && position <= 5
-  ? slotPlacement(game.gridY[0], player)
+  ? chipPlacement(e, game.gridY[0], 0)
   : position >= 6 && position <= 11
-  ? slotPlacement(game.gridY[1], player)
-  : position >= 12 && position <= 16
-  ? slotPlacement(game.gridY[2], player)
+  ? chipPlacement(e, game.gridY[1], 1)
+  : position >= 12 && position <= 17
+  ? chipPlacement(e, game.gridY[2], 2)
   : position >= 18 && position <= 23
-  ? slotPlacement(game.gridY[3], player)
+  ? chipPlacement(e, game.gridY[3], 3)
   : position >= 24 && position <= 29
-  ? slotPlacement(game.gridY[4], player)
+  ? chipPlacement(e, game.gridY[4], 4)
   : position >= 30 && position <= 35
-  ? slotPlacement(game.gridY[5], player)
-  : position >= 35 && position <= 41
-  ? slotPlacement(game.gridY[6], player)
+  ? chipPlacement(e, game.gridY[5], 5)
+  : position >= 36 && position <= 41
+  ? chipPlacement(e, game.gridY[6], 6)
   : false;
 }
 
-function switchPlayer(e) {
-
-  e.target.parentElement.dataset.p1p2 ^= 1;
-}
-
 const allSlots = Array.from(document.querySelectorAll('li'));
-const domGridColumns = {
-  col0: allSlots.slice(0, 6),
-  col1: allSlots.slice(6, 12),
-  col2: allSlots.slice(12, 18),
-  col3: allSlots.slice(18, 24),
-  col4: allSlots.slice(24, 30),
-  col5: allSlots.slice(30, 36),
-  col6: allSlots.slice(36, 42)
+const domGridColumns = [
+  allSlots.slice(0, 6),
+  allSlots.slice(6, 12),
+  allSlots.slice(12, 18),
+  allSlots.slice(18, 24),
+  allSlots.slice(24, 30),
+  allSlots.slice(30, 36),
+  allSlots.slice(36, 42)
+]
+
+function insertPlayerChip(col, idx, player) {
+  domGridColumns[col][idx].style.backgroundColor = `${player === 1 ? 'blue' : 'red'}`;
+  game.grid[idx][col][0] = player;
 }
-// console.log(domGridColumns.col0[0].dataset.slot)
 
-const domToGrid = (arr, idx) => {
-  arr[idx].forEach((item, idx) => {
-  console.log(item[0] = parseInt(allSlots[idx].textContent));
-  })
-};
+function chipPlacement(e, column, idx) {
+  playerSwitch = e.target.parentElement.dataset.p1p2 ^= 1;
+  let player = playerSwitch === 1 ? 1 : 2;
+  for (let i = column.length - 1; i >= 0; i--) {
+    if (column[i] == false) {
+      domGridColumns[idx][i].style.backgroundColor = `${playerSwitch === 1 ? 'blue' : 'red'}`;
+      game.grid[i][idx][0] = player;
+      setTimeout(() => checkForWinner(player), 200);
+      return;
+    }
+  }
+}
 
-// console.log(domToGrid(game.grid, 0))
+function checkForWinner(player) {
+  let indexListArr = [
+  game.getIdxList(game.grid, player),
+  game.getIdxList(game.gridY, player),
+  game.getIdxList(game.topLeftBotRight, player),
+  game.getIdxList(game.botLeftTopRight, player),
+  ];
+  indexListArr.forEach(arr => {
+   game.winnerCheck(arr) ? winner(player) : false;
+  });
+}
+
+function winner(player) {
+  window.alert(`  Player ${player} WINS!
+  Play a new game?`);
+  game.gameReset();
+  allSlots.forEach(slot => slot.style.backgroundColor = '');
+  location.reload();
+}
 
 
+function rowIndicator () {
+  domGridColumns.forEach((column, idx) => {
+    column.forEach(slot => slot.addEventListener('mouseover', () => highlightRow(idx)));
+    column.forEach(slot => slot.addEventListener('mouseout', () => highlightRow(idx, 1)));
+  });
+
+}
+
+function highlightRow(col, off) {
+  const mouseIn = () => {
+    domGridColumns[col].forEach(slot => slot.style.border = 
+      `${document.querySelector('#grid-container').dataset.p1p2 === '0' ? '2px dotted blue' : '2px dotted red'}`);
+  }
+  const mouseOut = () => {
+    domGridColumns[col].forEach(slot => slot.style.border = ''); 
+  }
+  domGridColumns[col].forEach(slot => slot.addEventListener('click', () => {
+    playerSwitch = parseInt(document.querySelector('#grid-container').dataset.p1p2);
+    setTimeout(mouseIn, 200);
+  }));
+  off ? mouseOut() : mouseIn();
+}
 
 
 

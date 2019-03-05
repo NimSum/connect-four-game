@@ -29,7 +29,7 @@ section {
   padding: 15px;
   display: grid;
   list-style-type: none;
-  grid-gap: 10px;
+  grid-gap: 8px;
   background-color: lightgray;
   grid-template-columns: repeat(7, minmax(20px, 10vw));
   grid-template-rows: repeat(6, minmax(20px, 10vh));
@@ -38,15 +38,7 @@ section {
 }
 
 .main-grid-container li {
-  border-radius: 50%;
-  border: 1px solid black;
+  border-radius: 20%;
+  border: 1px solid gray;
   background-color: #fff;
-}
-
-.p1-chip {
-  background-color: blue;
-}
-
-.p2-chip {
-  background-color: red;
 }
