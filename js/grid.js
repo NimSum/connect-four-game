@@ -43,10 +43,11 @@ class Grid {
     }, []);
     array.forEach((item, idx) => {
       let idxRow = filteredIdx(array, idx, key);
-      idxRow.length <= 2 ? true : idxRow.forEach(idx => idxArr.push(idx)) 
+      idxRow.length <= 3 ? true : idxRow.forEach(idx => idxArr.push(idx)) 
     })
     return idxArr;
   }
+
   winnerCheck(arr) {
     let winCheck = [];
     for (let i = 0; i < arr.length; i++) {
@@ -57,6 +58,7 @@ class Grid {
       }
     } 
   }
+  
   gameReset() {
     this.grid = [
       [[], [], [], [], [], [], []],//A = 0
