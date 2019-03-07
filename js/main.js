@@ -2,6 +2,14 @@ window.addEventListener('load', gridEventListener);
 const game = new Grid();
 let playerSwitch = parseInt(document.querySelector('#grid-container').dataset.p1p2);
 
+function tieCheck() {
+  let counter = 0;
+  game.grid.forEach(row => {
+    row.forEach(slot => slot[0] === 1 || slot[0] === 2 ? counter++ : false)
+  });
+  if (counter == 42) winner();
+};
+
 function gridEventListener() {
   rowIndicator();
   const validateClick = (e) => {
@@ -42,11 +50,6 @@ const domGridColumns = [
   allSlots.slice(36, 42)
 ]
 
-function insertPlayerChip(col, idx, player) {
-  domGridColumns[col][idx].style.backgroundColor = `${player === 1 ? 'blue' : 'red'}`;
-  game.grid[idx][col][0] = player;
-}
-
 function chipPlacement(e, column, idx) {
   playerSwitch = e.target.parentElement.dataset.p1p2 ^= 1;
   let player = playerSwitch === 1 ? 1 : 2;
@@ -70,11 +73,13 @@ function checkForWinner(player) {
   indexListArr.forEach(arr => {
    game.winnerCheck(arr) ? winner(player) : false;
   });
+  tieCheck();
 }
 
 function winner(player) {
-  window.alert(`  Player ${player} WINS!
-  Play a new game?`);
+  player 
+  ? window.alert(`  Player ${player} WINS! Play a new game?`)
+  : window.alert(`It's a TIE ! Play a tie-breaker?`);
   game.gameReset();
   allSlots.forEach(slot => slot.style.backgroundColor = '');
   location.reload();
