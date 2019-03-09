@@ -1,42 +1,30 @@
 window.addEventListener('load', gridEventListener);
 const game = new Grid();
-let playerSwitch = parseInt(document.querySelector('#grid-container').dataset.p1p2);
-
-function tieCheck() {
-  let counter = 0;
-  game.grid.forEach(row => {
-    row.forEach(slot => slot[0] === 1 || slot[0] === 2 ? counter++ : false)
-  });
-  if (counter == 42) winner();
-};
+let playerSwitch = parseInt(document.querySelector('#grid-container').dataset.p1p2, 10);
 
 function gridEventListener() {
   rowIndicator();
   const validateClick = (e) => {
-    e.target.nodeName === 'LI' 
-    ? checkPosition(e)
-    : false;
-  }
+    if (e.target.nodeName === 'LI') {
+      checkPosition(e);
+    }
+  };
   document.querySelector('#grid-container').addEventListener('click', validateClick);
 }
 
 function checkPosition(e) {
-  let position = e.target.dataset.slot;
-  position >= 0 && position <= 5
-  ? chipPlacement(e, game.gridY[0], 0)
-  : position >= 6 && position <= 11
-  ? chipPlacement(e, game.gridY[1], 1)
-  : position >= 12 && position <= 17
-  ? chipPlacement(e, game.gridY[2], 2)
-  : position >= 18 && position <= 23
-  ? chipPlacement(e, game.gridY[3], 3)
-  : position >= 24 && position <= 29
-  ? chipPlacement(e, game.gridY[4], 4)
-  : position >= 30 && position <= 35
-  ? chipPlacement(e, game.gridY[5], 5)
-  : position >= 36 && position <= 41
-  ? chipPlacement(e, game.gridY[6], 6)
-  : false;
+  const position = e.target.dataset.slot;
+  const colPositions = [
+    {column: position >= 0 && position <= 5},
+    {column: position >= 6 && position <= 11},
+    {column: position >= 12 && position <= 17},
+    {column: position >= 18 && position <= 23},
+    {column: position >= 24 && position <= 29},
+    {column: position >= 30 && position <= 35},
+    {column: position >= 36 && position <= 41}
+  ]
+  const indexFound = colPositions.findIndex(col => col.column === true);
+  chipPlacement(e, game.gridY[indexFound], indexFound)
 }
 
 const allSlots = Array.from(document.querySelectorAll('li'));
@@ -54,61 +42,82 @@ function chipPlacement(e, column, idx) {
   playerSwitch = e.target.parentElement.dataset.p1p2 ^= 1;
   let player = playerSwitch === 1 ? 1 : 2;
   for (let i = column.length - 1; i >= 0; i--) {
-    if (column[i] == false) {
+    if (column[i][0] === undefined) {
       domGridColumns[idx][i].style.backgroundColor = `${playerSwitch === 1 ? 'blue' : 'red'}`;
       game.grid[i][idx][0] = player;
-      setTimeout(() => checkForWinner(player), 200);
+      setTimeout(() => checkForWinner(player), 100);
       return;
     }
   }
 }
 
+function tieCheck() {
+  let counter = 0;
+  game.grid.forEach(row => {
+    row.forEach(slot => slot[0] === 1 || slot[0] === 2 ? counter++ : false)
+  });
+  if (counter === 42) {
+    winner()
+  }
+}
+
 function checkForWinner(player) {
   let indexListArr = [
-  game.getIdxList(game.grid, player),
-  game.getIdxList(game.gridY, player),
-  game.getIdxList(game.topLeftBotRight, player),
-  game.getIdxList(game.botLeftTopRight, player),
+    game.getIdxList(game.grid, player),
+    game.getIdxList(game.gridY, player),
+    game.getIdxList(game.topLeftBotRight, player),
+    game.getIdxList(game.botLeftTopRight, player),
   ];
-  indexListArr.forEach(arr => {
-   game.winnerCheck(arr) ? winner(player) : false;
+  indexListArr.forEach((arr) => {
+    if (game.winnerCheck(arr)) {
+      winner(player);
+    }
   });
   tieCheck();
 }
 
 function winner(player) {
   player 
-  ? window.alert(`  Player ${player} WINS! Play a new game?`)
-  : window.alert(`It's a TIE ! Play a tie-breaker?`);
-  game.gameReset();
+    ? window.alert(`  Player ${player} WINS! Play a new game?`)
+    : window.alert(`It's a TIE ! Play a tie-breaker?`);
   allSlots.forEach(slot => slot.style.backgroundColor = '');
-  location.reload();
+  const refresh = () => location.reload();
+  setTimeout(refresh, 200);
 }
 
 
-function rowIndicator () {
+function rowIndicator() {
   domGridColumns.forEach((column, idx) => {
     column.forEach(slot => slot.addEventListener('mouseover', () => highlightRow(idx)));
     column.forEach(slot => slot.addEventListener('mouseout', () => highlightRow(idx, 1)));
   });
-
 }
 
 function highlightRow(col, off) {
   const mouseIn = () => {
     domGridColumns[col].forEach(slot => slot.style.border = 
-      `${document.querySelector('#grid-container').dataset.p1p2 === '0' ? '2px dotted blue' : '2px dotted red'}`);
+      `${document.querySelector('#grid-container').dataset.p1p2 === '0' ? '3px dotted blue' : '3px dotted red'}`)
   }
   const mouseOut = () => {
-    domGridColumns[col].forEach(slot => slot.style.border = ''); 
-  }
+    domGridColumns[col].forEach((slot) => slot.style.border = '');
+  };
   domGridColumns[col].forEach(slot => slot.addEventListener('click', () => {
-    playerSwitch = parseInt(document.querySelector('#grid-container').dataset.p1p2);
-    setTimeout(mouseIn, 200);
+    playerSwitch = parseInt(document.querySelector('#grid-container').dataset.p1p2, 10);
+    setTimeout(mouseIn, 100);
   }));
   off ? mouseOut() : mouseIn();
 }
 
+// function reloadPrevGame() {
+//   let storedArr = JSON.parse(localStorage.getItem('game'));
+//   let slotArr = [];
+//   storedArr.forEach(row => {
+//     row.forEach(slot => slotArr.push(slot))
+//   });
+//   allSlots.forEach((slot, i) => {
+//     if (slotArr[i][0] === 1) allSlots[i].style.backgroundColor = 'blue';
+//     if (slotArr[i][0] === 2) allSlots[i].style.backgroundColor = 'red';
+//   });
+// }
 
-
-
+// reloadPrevGame()
